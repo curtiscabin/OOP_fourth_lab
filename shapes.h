@@ -15,19 +15,26 @@ protected:
     int size = 30;
     QPoint* borders = nullptr;
     bool isSelect = false;
-    QString color = "black";
+    QString color = "white";
 
 public:
     Shape(QWidget* parent = nullptr) : QWidget(parent) {}
 
-    virtual bool isCordBelong() = 0;
+    virtual bool isCordBelong(const QPoint &p) = 0;
 
     void SetSelect(){
         isSelect = true;
+        update();
+    }
+
+    void SwitchSelect(){
+        isSelect = !isSelect;
+        update();
     }
 
     void ClearSelect(){
         isSelect = false;
+        update();
     }
 
     bool isSelect_(){
@@ -40,7 +47,7 @@ public:
 
     virtual bool isOutside() = 0;
 
-    virtual void MoveShape() = 0;
+    virtual void MoveShape(const QPoint &p) = 0;
 
     virtual void EditSize() = 0;
 
@@ -69,16 +76,8 @@ public:
         painter.drawEllipse(0,0,2*size,2*size);
     }
 
-    bool isCordBelong(){
-        return false;
-    }
-
-    bool isOutside(){
-        return false;
-    }
-
-    void MoveShape(){
-
+    bool isCordBelong(const QPoint& p){
+        return this->geometry().contains(p);
     }
 
     void EditSize(){
@@ -89,7 +88,11 @@ public:
 
     }
 
-    void MoveShape(QPoint &p){
+    bool isOutside(){
+
+    }
+
+    void MoveShape(const QPoint &p){
         move(p.x() - size, p.y() - size);
         update();
     }

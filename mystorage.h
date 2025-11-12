@@ -77,6 +77,12 @@ public:
         return count;
     }
 
+    void clearSelection (){
+        for(this->first();!this->eol();this->next()){
+            this->getObject()->ClearSelect();
+        }
+    }
+
 
 
 };

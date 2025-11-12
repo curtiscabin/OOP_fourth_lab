@@ -22,8 +22,8 @@ public:
 
 private:
     Ui::MainWindow *ui;
-    void mousePressEvent(QMouseEvent *m_event) override;
-    // void mouseMoveEvent(QMouseEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
     MyStorage *store;
 };
 #endif // MAINWINDOW_H

@@ -14,9 +14,21 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::mousePressEvent(QMouseEvent *m_event){
-    QPoint p = m_event->pos();
-    Circle *s = new Circle(p,this);
+void MainWindow::mousePressEvent(QMouseEvent *event){
+    store->clearSelection();
+    for (store->first();!store->eol();store->next()){
+        if(store->getObject()->isCordBelong(event->pos())){
+            store->getObject()->SetSelect();
+            return;
+        }
+    }
+    Circle *s = new Circle(event->pos(),this);
     s->PaintShape();
     store->add(s);
+}
+
+void MainWindow::mouseMoveEvent(QMouseEvent *event){
+    for(store->first();!store->eol();store->next()){
+        if(store->getObject()->isSelect_())store->getObject()->MoveShape(event->pos());
+}
 }
