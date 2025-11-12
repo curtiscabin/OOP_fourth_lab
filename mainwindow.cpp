@@ -22,13 +22,32 @@ void MainWindow::mousePressEvent(QMouseEvent *event){
             return;
         }
     }
-    Circle *s = new Circle(event->pos(),this);
+
+    b = event->pos();
+    s = new Circle(b,b,this);
     s->PaintShape();
+    s->SetCreating();
     store->add(s);
 }
 
-void MainWindow::mouseMoveEvent(QMouseEvent *event){
-    for(store->first();!store->eol();store->next()){
-        if(store->getObject()->isSelect_())store->getObject()->MoveShape(event->pos());
+void MainWindow::mouseReleaseEvent(QMouseEvent *event){
+    s->ClearCreating();
 }
+
+void MainWindow::mouseMoveEvent(QMouseEvent *event){
+
+
+    if(s->isCreating_()){
+        e = event->pos();
+        s->EditSize(b,e);
+    }
+    else{
+        for(store->first();!store->eol();store->next()){
+            if(store->getObject()->isSelect_()) {
+                store->getObject()->MoveShape(event->pos());
+            }
+        }
+    }
+
+
 }

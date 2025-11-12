@@ -8,14 +8,17 @@
 #include<QDebug>
 #include<QString>
 #include<QPainter>
+#include<math.h>
 
 class Shape : public QWidget {
     Q_OBJECT
 protected:
-    int size = 30;
+    int sizeX;
+    int sizeY;
     QPoint* borders = nullptr;
     bool isSelect = false;
     QString color = "white";
+    bool isCreating = false;
 
 public:
     Shape(QWidget* parent = nullptr) : QWidget(parent) {}
@@ -45,21 +48,53 @@ public:
         show();
     }
 
-    virtual bool isOutside() = 0;
+    void SetCreating(){
+        isCreating = true;
+    }
+
+    void ClearCreating(){
+        isCreating = false;
+    }
+
+    bool isCreating_() {
+        return isCreating;
+    }
+
+    bool isOutside(const QPoint &p){
+        QRect circleRect(p.x() - sizeX/2, p.y() - sizeY/2, sizeX, sizeY);
+        return !this->parentWidget()->rect().contains(circleRect);
+    }
 
     virtual void MoveShape(const QPoint &p) = 0;
 
-    virtual void EditSize() = 0;
-
     virtual void EditColor() = 0;
+
+    void EditSize(const QPoint& b, const QPoint& e){
+        sizeX = abs(e.x() - b.x());
+        sizeY = abs(e.y()- b.y());
+        setFixedSize(sizeX, sizeY);
+
+        if (b.x() < e.x() && b.y() > e.y() ){
+            move(b.x(), e.y());
+        }
+        else if (b.x() > e.x() &&b.y() < e.y()){
+            move(e.x(), b.y());
+        }
+        else if (b.x() > e.x() &&b.y() > e.y()){
+            move(e.x(), e.y());
+        }
+        else move(b.x(), b.y());
+        update();
+    }
 
 };
 
 class Circle : public Shape {
 public:
-    Circle(const QPoint& p, QWidget* parent) : Shape(parent){
-        setFixedSize(2.2*size, 2.2*size);
-        move(p.x() - size, p.y() - size);
+    Circle(const QPoint& b, const QPoint& e, QWidget* parent) : Shape(parent){
+        sizeX = abs(e.x() - b.x());
+        sizeY = abs(e.y()- b.y());
+
     }
 
     ~Circle(){
@@ -73,31 +108,23 @@ public:
         else painter.setPen(QPen(color));
 
         painter.setRenderHint(QPainter::Antialiasing);
-        painter.drawEllipse(0,0,2*size,2*size);
+        painter.drawEllipse(0,0,sizeX,sizeY);
     }
 
     bool isCordBelong(const QPoint& p){
         return this->geometry().contains(p);
     }
 
-    void EditSize(){
-
-    }
-
     void EditColor(){
 
     }
 
-    bool isOutside(){
-
-    }
-
     void MoveShape(const QPoint &p){
-        move(p.x() - size, p.y() - size);
-        update();
+        if(!isOutside(p)){
+            move(p.x() - sizeX/2, p.y() - sizeY/2);
+            update();
+        }
     }
-
-
 
 
 };
