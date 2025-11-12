@@ -1,21 +1,26 @@
 #ifndef SHAPES_H
 #define SHAPES_H
+
+#endif // SHAPES_H
+#pragma once
 #include<QPoint>
 #include<QWidget>
 #include<QDebug>
 #include<QString>
+#include<QPainter>
 
 class Shape : public QWidget {
     Q_OBJECT
-
-    int rad = 30;
+protected:
+    int size = 30;
     QPoint* borders = nullptr;
     bool isSelect = false;
-    QString color;
-
+    QString color = "black";
 
 public:
-    bool isCordBelong() = 0;
+    Shape(QWidget* parent = nullptr) : QWidget(parent) {}
+
+    virtual bool isCordBelong() = 0;
 
     void SetSelect(){
         isSelect = true;
@@ -33,36 +38,65 @@ public:
         show();
     }
 
-    bool isOutside() = 0;
+    virtual bool isOutside() = 0;
 
-    void MoveShape() = 0;
+    virtual void MoveShape() = 0;
 
-    void EditSize() = 0;
+    virtual void EditSize() = 0;
 
-    void EditColor() = 0;
+    virtual void EditColor() = 0;
+
 };
 
 class Circle : public Shape {
 public:
-    Circle(const QPoint& p){
-        setFixedSize(2.2*rad, 2.2*rad);
-        move(p.x() - rad, p.y() - rad);
+    Circle(const QPoint& p, QWidget* parent) : Shape(parent){
+        setFixedSize(2.2*size, 2.2*size);
+        move(p.x() - size, p.y() - size);
     }
 
     ~Circle(){
         update();
     }
 
-
-
     void paintEvent(QPaintEvent *) override {
         QPainter painter(this);
-        if (isSelect()) painter.setPen(QPen(Qt::cyan, 3));
+
+        if (isSelect_()) painter.setPen(QPen(Qt::cyan, 3));
+        else painter.setPen(QPen(color));
+
         painter.setRenderHint(QPainter::Antialiasing);
-        painter.drawEllipse(0,0,2*rad,2*rad);
+        painter.drawEllipse(0,0,2*size,2*size);
+    }
+
+    bool isCordBelong(){
+        return false;
+    }
+
+    bool isOutside(){
+        return false;
+    }
+
+    void MoveShape(){
 
     }
 
-}
+    void EditSize(){
 
-#endif // SHAPES_H
+    }
+
+    void EditColor(){
+
+    }
+
+    void MoveShape(QPoint &p){
+        move(p.x() - size, p.y() - size);
+        update();
+    }
+
+
+
+
+};
+
+

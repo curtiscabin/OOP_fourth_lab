@@ -2,6 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include<QMouseEvent>
+#include"mystorage.h"
+#include"shapes.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -19,5 +22,8 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    void mousePressEvent(QMouseEvent *m_event) override;
+    // void mouseMoveEvent(QMouseEvent *event) override;
+    MyStorage *store;
 };
 #endif // MAINWINDOW_H
