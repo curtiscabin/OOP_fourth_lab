@@ -19,8 +19,8 @@ protected:
     QPoint* borders = nullptr;
     bool isSelect = false;
     QString color = "white";
-    bool isCreating = false;
-    QPushButton *edit;
+    QPushButton *edit = nullptr;
+
 
 
 public:
@@ -42,7 +42,7 @@ public:
 
         if (edit && this) {
             connect(edit, &QPushButton::pressed, this, &Shape::onEditButtonPressed);
-            // connect(edit, &QPushButton::released, this, &Shape::onEditButtonReleased);
+            connect(edit, &QPushButton::released, this, &Shape::onEditButtonReleased);
         }
         update();
     }
@@ -50,6 +50,7 @@ public:
     void ClearSelect(){
         isSelect = false;
         delete edit;
+        edit = nullptr;
         update();
     }
 
@@ -61,17 +62,6 @@ public:
         show();
     }
 
-    void SetCreating(){
-        isCreating = true;
-    }
-
-    void ClearCreating(){
-        isCreating = false;
-    }
-
-    bool isCreating_() {
-        return isCreating;
-    }
 
     void MoveShape(const QPoint &p) {
         QRect parentRect = this->parentWidget()->rect();
@@ -104,28 +94,32 @@ public:
         }
         else move(b.x(), b.y());
 
+        if(isEditSize()){
+            edit->move(sizeX - 20, sizeY - 20);
+        }
+
         update();
     }
 
     bool isEditSize(){
-        return edit->isDown();
+        return edit && edit->isDown();
     }
 
 
 private slots:
     void onEditButtonPressed() {
         qDebug()<<"Button is pressed";
-        QPoint b = this->pos();
-        QPoint e = QCursor::pos();
-        this->EditSize(b,e);
-        edit->move(sizeX - 20, sizeY - 20);
-        qDebug()<<e;
+        if (parentWidget()) {
+            parentWidget()->grabMouse();
+        }
     }
 
-    // void onEditButtonReleased() {
-    //     qDebug()<<"Button is released";
-    //     isEditSize_ = false;
-    // }
+    void onEditButtonReleased() {
+        qDebug()<<"Button is released";
+        if (parentWidget()) {
+            parentWidget()->releaseMouse();
+        }
+    }
 
 };
 

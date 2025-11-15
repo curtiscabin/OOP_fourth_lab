@@ -17,6 +17,7 @@ MainWindow::~MainWindow()
 void MainWindow::mousePressEvent(QMouseEvent *event){
     qDebug()<<"enter to Click";
     store->clearSelection();
+    isSelecting = false;
     for (store->first();!store->eol();store->next()){
         if(store->getObject()->isCordBelong(event->pos())){
             store->getObject()->SetSelect();
@@ -30,12 +31,12 @@ void MainWindow::mousePressEvent(QMouseEvent *event){
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *event){
     s = nullptr;
-    isSelecting = false;
+    // isSelecting = false;
 }
 
 void MainWindow::mouseMoveEvent(QMouseEvent *event){
     e = event->pos();
-    if (!isSelecting){
+    if (!isSelecting ){
         if(!s){
             s = new Circle(b,e,this);
             store->add(s);
@@ -45,8 +46,14 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event){
     }
     else{
         for(store->first();!store->eol();store->next()){
-            if(store->getObject()->isSelect_() && !store->getObject()->isEditSize()) {
-                store->getObject()->MoveShape(e);
+            if(store->getObject()->isSelect_()) {
+                if (!store->getObject()->isEditSize()){
+                    store->getObject()->MoveShape(e);
+                }
+                else {
+                    b = store->getObject()->pos();
+                    store->getObject()->EditSize(b,e);
+                }
             }
         }
     }
