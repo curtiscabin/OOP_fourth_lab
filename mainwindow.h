@@ -28,6 +28,7 @@ private:
     MyStorage *store;
     QPoint b;
     QPoint e;
-    Shape *s;
+    Shape *s = nullptr;
+    bool isSelecting = false;
 };
 #endif // MAINWINDOW_H

@@ -9,6 +9,7 @@
 #include<QString>
 #include<QPainter>
 #include<math.h>
+#include<QPushButton>
 
 class Shape : public QWidget {
     Q_OBJECT
@@ -19,24 +20,36 @@ protected:
     bool isSelect = false;
     QString color = "white";
     bool isCreating = false;
+    QPushButton *edit;
+
 
 public:
-    Shape(QWidget* parent = nullptr) : QWidget(parent) {}
+    Shape(const QPoint& b, const QPoint& e, QWidget* parent = nullptr) : QWidget(parent) {
+        sizeX = abs(e.x() - b.x());
+        sizeY = abs(e.y()- b.y());
+    }
 
-    virtual bool isCordBelong(const QPoint &p) = 0;
+    bool isCordBelong(const QPoint& p){
+        return this->geometry().contains(p);
+    }
 
     void SetSelect(){
         isSelect = true;
-        update();
-    }
+        edit = new QPushButton(this);
+        edit->setFixedSize(20,20);
+        edit->move(sizeX - 20, sizeY - 20);
+        edit->show();
 
-    void SwitchSelect(){
-        isSelect = !isSelect;
+        if (edit && this) {
+            connect(edit, &QPushButton::pressed, this, &Shape::onEditButtonPressed);
+            // connect(edit, &QPushButton::released, this, &Shape::onEditButtonReleased);
+        }
         update();
     }
 
     void ClearSelect(){
         isSelect = false;
+        delete edit;
         update();
     }
 
@@ -60,12 +73,18 @@ public:
         return isCreating;
     }
 
-    bool isOutside(const QPoint &p){
-        QRect circleRect(p.x() - sizeX/2, p.y() - sizeY/2, sizeX, sizeY);
-        return !this->parentWidget()->rect().contains(circleRect);
+    void MoveShape(const QPoint &p) {
+        QRect parentRect = this->parentWidget()->rect();
+        if(parentRect.x() <= p.x() + sizeX /2 && p.x() + sizeX/2 <= parentRect.x() + parentRect.width()
+            &&parentRect.x() <= p.x() - sizeX /2 && p.x() - sizeX/2 <= parentRect.x() + parentRect.width()){
+            move(p.x() - sizeX/2, this->y());
+        }
+        if(parentRect.y() <= p.y() + sizeY/2 && p.y() + sizeY/2 <= parentRect.y() + parentRect.height()
+            &&parentRect.y() <= p.y() - sizeY/2 && p.y() - sizeY/2 <= parentRect.y() + parentRect.height()){
+            move(this->x(), p.y() - sizeY/2);
+        }
+        update();
     }
-
-    virtual void MoveShape(const QPoint &p) = 0;
 
     virtual void EditColor() = 0;
 
@@ -84,17 +103,36 @@ public:
             move(e.x(), e.y());
         }
         else move(b.x(), b.y());
+
         update();
     }
+
+    bool isEditSize(){
+        return edit->isDown();
+    }
+
+
+private slots:
+    void onEditButtonPressed() {
+        qDebug()<<"Button is pressed";
+        QPoint b = this->pos();
+        QPoint e = QCursor::pos();
+        this->EditSize(b,e);
+        edit->move(sizeX - 20, sizeY - 20);
+        qDebug()<<e;
+    }
+
+    // void onEditButtonReleased() {
+    //     qDebug()<<"Button is released";
+    //     isEditSize_ = false;
+    // }
 
 };
 
 class Circle : public Shape {
 public:
-    Circle(const QPoint& b, const QPoint& e, QWidget* parent) : Shape(parent){
-        sizeX = abs(e.x() - b.x());
-        sizeY = abs(e.y()- b.y());
-
+    Circle(const QPoint& b, const QPoint& e, QWidget* parent) : Shape(b, e, parent){
+        qDebug()<<"Created Circle";
     }
 
     ~Circle(){
@@ -111,19 +149,10 @@ public:
         painter.drawEllipse(0,0,sizeX,sizeY);
     }
 
-    bool isCordBelong(const QPoint& p){
-        return this->geometry().contains(p);
-    }
+
 
     void EditColor(){
 
-    }
-
-    void MoveShape(const QPoint &p){
-        if(!isOutside(p)){
-            move(p.x() - sizeX/2, p.y() - sizeY/2);
-            update();
-        }
     }
 
 

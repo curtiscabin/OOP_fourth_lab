@@ -79,7 +79,7 @@ public:
 
     void clearSelection (){
         for(this->first();!this->eol();this->next()){
-            this->getObject()->ClearSelect();
+            if(this->getObject()->isSelect_())this->getObject()->ClearSelect();
         }
     }
 
