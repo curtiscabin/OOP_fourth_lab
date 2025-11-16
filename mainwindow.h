@@ -25,6 +25,7 @@ private:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *) override;
+    void keyPressEvent(QKeyEvent *event) override;
     MyStorage *store;
     QPoint b;
     QPoint e;

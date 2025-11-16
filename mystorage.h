@@ -12,7 +12,7 @@ class Node{
     Node():next(nullptr),shape(nullptr){}
 
     ~Node(){
-        if (shape!=nullptr)delete shape;
+        if (shape!=nullptr) delete shape;
     }
 
     friend class MyStorage;
@@ -44,7 +44,7 @@ public:
     }
 
     void add(Shape *shap){
-
+        qDebug()<<"enter to add";
         Node* node = new Node;
         node->shape = shap;
         node->next = head;
@@ -78,8 +78,46 @@ public:
     }
 
     void clearSelection (){
+        qDebug()<<"enter to ClearSelection";
         for(this->first();!this->eol();this->next()){
-            if(this->getObject()->isSelect_())this->getObject()->ClearSelect();
+            qDebug()<<"enter to loop in ClearSelection";
+            if(this->getObject()->isSelect_()){
+                qDebug()<<"enter to if in ClearSelection";
+                this->getObject()->ClearSelect();
+                qDebug()<<"over from if in ClearSelection";
+            }
+            qDebug()<<"over from loop in ClearSelection";
+        }
+        qDebug()<<"over from ClearSelection";
+    }
+
+    void deleteCircles (){
+        Node* prev = nullptr;
+        Node* node = head;
+        Node* toDelete = nullptr;
+
+        while(node){
+            if(node->shape->isSelect_()){
+                toDelete = node;
+                node = node->next;
+
+                if(prev){
+                    prev->next = node;
+                }
+                else {
+                    head = node;
+                }
+
+                if(!node){
+                    tail = prev;
+                }
+
+                delete toDelete;
+            }
+            else {
+                prev = node;
+                node = node->next;
+            }
         }
     }
 

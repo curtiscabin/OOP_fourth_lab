@@ -46,8 +46,17 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event){
     else{
         for(store->first();!store->eol();store->next()){
             if(store->getObject()->isSelect_()) {
-                    store->getObject()->MoveShape(e);
+            store->getObject()->MoveShape(e);
         }
     }
 }
+}
+
+void MainWindow::keyPressEvent(QKeyEvent *event){
+    int key = event->key();
+
+    if (key == Qt::Key_Delete){
+        qDebug()<<"Key is Delete";
+        store->deleteCircles();
+    }
 }

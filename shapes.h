@@ -29,6 +29,10 @@ public:
         sizeY = abs(e.y()- b.y());
     }
 
+    ~Shape(){
+        update();
+    }
+
     bool isCordBelong(const QPoint& p){
         return this->geometry().contains(p);
     }
