@@ -24,7 +24,7 @@ private:
     Ui::MainWindow *ui;
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
-    void mouseReleaseEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *) override;
     MyStorage *store;
     QPoint b;
     QPoint e;

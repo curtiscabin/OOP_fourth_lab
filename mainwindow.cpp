@@ -29,9 +29,8 @@ void MainWindow::mousePressEvent(QMouseEvent *event){
     b = event->pos();
 }
 
-void MainWindow::mouseReleaseEvent(QMouseEvent *event){
+void MainWindow::mouseReleaseEvent(QMouseEvent *){
     s = nullptr;
-    // isSelecting = false;
 }
 
 void MainWindow::mouseMoveEvent(QMouseEvent *event){
@@ -41,20 +40,14 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event){
             s = new Circle(b,e,this);
             store->add(s);
         }
-        s->EditSize(b,e);
+        s->CreatSize(b,e);
         s->PaintShape();
     }
     else{
         for(store->first();!store->eol();store->next()){
             if(store->getObject()->isSelect_()) {
-                if (!store->getObject()->isEditSize()){
                     store->getObject()->MoveShape(e);
-                }
-                else {
-                    b = store->getObject()->pos();
-                    store->getObject()->EditSize(b,e);
-                }
-            }
         }
     }
+}
 }

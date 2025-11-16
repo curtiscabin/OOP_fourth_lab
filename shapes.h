@@ -20,7 +20,7 @@ protected:
     bool isSelect = false;
     QString color = "white";
     QPushButton *edit = nullptr;
-
+    bool isResize = false;
 
 
 public:
@@ -42,7 +42,6 @@ public:
 
         if (edit && this) {
             connect(edit, &QPushButton::pressed, this, &Shape::onEditButtonPressed);
-            connect(edit, &QPushButton::released, this, &Shape::onEditButtonReleased);
         }
         update();
     }
@@ -73,12 +72,12 @@ public:
             &&parentRect.y() <= p.y() - sizeY/2 && p.y() - sizeY/2 <= parentRect.y() + parentRect.height()){
             move(this->x(), p.y() - sizeY/2);
         }
-        update();
+        // update();
     }
 
     virtual void EditColor() = 0;
 
-    void EditSize(const QPoint& b, const QPoint& e){
+    void CreatSize(const QPoint& b, const QPoint& e){
         sizeX = abs(e.x() - b.x());
         sizeY = abs(e.y()- b.y());
         setFixedSize(sizeX, sizeY);
@@ -94,30 +93,51 @@ public:
         }
         else move(b.x(), b.y());
 
-        if(isEditSize()){
+        if(edit){
+            edit->move(sizeX - 20, sizeY - 20);
+        }
+    }
+
+    void EditSize(const QPoint& b, const QPoint& e){
+        sizeX = (e.x() - b.x()) < 10 ? 10 : e.x() - b.x();
+        sizeY = (e.y()- b.y()) < 10 ? 10 : e.y() - b.y();
+
+        setFixedSize(sizeX, sizeY);
+
+        if(edit){
             edit->move(sizeX - 20, sizeY - 20);
         }
 
-        update();
     }
 
-    bool isEditSize(){
-        return edit && edit->isDown();
+protected slots:
+    void mouseReleaseEvent(QMouseEvent *event) override {
+        if (isResize) {
+            isResize = false;
+            releaseMouse();
+            qDebug() << "Resize finished";
+        }
     }
+
 
 
 private slots:
     void onEditButtonPressed() {
         qDebug()<<"Button is pressed";
-        if (parentWidget()) {
-            parentWidget()->grabMouse();
-        }
+        grabMouse();
+        isResize = true;
     }
 
-    void onEditButtonReleased() {
-        qDebug()<<"Button is released";
-        if (parentWidget()) {
-            parentWidget()->releaseMouse();
+    void mouseMoveEvent(QMouseEvent *event) override{
+        if(isResize){
+            QPoint b = this->pos();
+            QPoint e = parentWidget()->mapFromGlobal(event->globalPos());
+            EditSize(b,e);
+            qDebug()<<"resize object";
+        }
+        else
+        {
+            event->ignore();
         }
     }
 
