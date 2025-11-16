@@ -152,9 +152,6 @@ protected slots:
         }
     }
 
-
-
-private slots:
     void onEditButtonPressed() {
         qDebug()<<"Button is pressed";
         grabMouse();
@@ -203,5 +200,98 @@ public:
     }
 
 };
+
+class Rect : public Shape {
+public:
+    Rect(const QPoint& b, const QPoint& e, QWidget* parent)
+        : Shape(b, e, parent)
+    {
+        qDebug() << "Created Square";
+    }
+
+    void paintEvent(QPaintEvent *) override {
+        QPainter painter(this);
+        painter.setRenderHint(QPainter::Antialiasing);
+
+        QPen rectPen(color);
+        painter.setPen(rectPen);
+        painter.setBrush(color);
+        painter.drawRect(0, 0, sizeX, sizeY);
+
+        if (isSelect_()) {
+            QPen selectPen(Qt::cyan);
+            selectPen.setDashPattern({4, 4});
+            selectPen.setWidth(3);
+            painter.setPen(selectPen);
+            painter.setBrush(Qt::NoBrush);
+            painter.drawRect(0, 0, sizeX, sizeY);
+        }
+    }
+};
+
+
+class Triangle : public Shape {
+public:
+    Triangle(const QPoint& b, const QPoint& e, QWidget* parent)
+        : Shape(b, e, parent)
+    {
+        qDebug() << "Created Triangle";
+    }
+
+    void paintEvent(QPaintEvent *) override {
+        QPainter painter(this);
+        painter.setRenderHint(QPainter::Antialiasing);
+
+        QPen trianglePen(color);
+        painter.setPen(trianglePen);
+        painter.setBrush(color);
+
+        QPolygonF poly;
+        poly << QPointF(sizeX / 2.0, 0)
+             << QPointF(sizeX,       sizeY)
+             << QPointF(0,           sizeY);
+        painter.drawPolygon(poly);
+
+        if (isSelect_()) {
+            QPen selectPen(Qt::cyan);
+            selectPen.setDashPattern({4, 4});
+            selectPen.setWidth(3);
+            painter.setPen(selectPen);
+            painter.setBrush(Qt::NoBrush);
+            painter.drawRect(0, 0, sizeX, sizeY);
+        }
+    }
+};
+
+
+class Section : public Shape {
+public:
+    Section(const QPoint& b, const QPoint& e, QWidget* parent) : Shape(b, e, parent){
+        qDebug()<<"Created Circle";
+    }
+
+    void paintEvent(QPaintEvent *) override {
+        QPainter painter(this);
+        QPen SectionPen;
+        painter.setRenderHint(QPainter::Antialiasing);
+
+        if (isSelect_()){
+            QPen SelectPen;
+            SelectPen.setDashPattern({4,4});
+            SelectPen.setColor("cyan");
+            SelectPen.setWidth(3);
+            painter.setPen(SelectPen);
+            painter.drawRect(0,0,sizeX,sizeY);
+        }
+        SectionPen.setColor(color);
+        painter.setPen(SectionPen);
+        painter.drawLine(0,0,sizeX,sizeY);
+    }
+
+};
+
+
+
+
 
 

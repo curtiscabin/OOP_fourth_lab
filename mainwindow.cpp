@@ -55,11 +55,9 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *){
 
 void MainWindow::mouseMoveEvent(QMouseEvent *event){
     e = event->pos();
-    QPoint delta = e - b;
-    qDebug()<<delta;
     if (!isSelecting ){
         if(!s){
-            s = new Circle(b,e,this);
+            s = GiveMe();
             s->EditColor(color);
             store->add(s);
         }
@@ -82,6 +80,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event){
         qDebug()<<"Key is Delete";
         store->deleteCircles();
     }
+
 }
 
 void MainWindow::EditColorByRadioBtton(){
@@ -114,6 +113,22 @@ if (ui->radioBlue->isChecked()){
         if(store->getObject()->isSelect_()){
             store->getObject()->EditColor(color);
         }
+    }
+
+}
+
+Shape* MainWindow::GiveMe(){
+    int key = ui->comboBox->currentIndex();
+    switch (key)
+    {
+    case 0 :
+        return new Circle(b,e,this);
+    case 1 :
+        return new Rect(b,e,this);
+    case 2 :
+        return new Triangle(b,e,this);
+    case 3 :
+        return new Section(b,e,this);
     }
 
 }

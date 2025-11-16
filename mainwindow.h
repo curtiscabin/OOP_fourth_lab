@@ -27,6 +27,7 @@ private:
     void mouseReleaseEvent(QMouseEvent *) override;
     void keyPressEvent(QKeyEvent *event) override;
     void EditColorByRadioBtton();
+    Shape* GiveMe();
     MyStorage *store;
     QPoint b;
     QPoint e;

@@ -47,7 +47,7 @@
         <bool>false</bool>
        </property>
        <property name="currentIndex">
-        <number>-1</number>
+        <number>0</number>
        </property>
        <property name="placeholderText">
         <string>Выберите фигуру</string>
@@ -70,11 +70,6 @@
        <item>
         <property name="text">
          <string>Отрезок</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Сердечко</string>
         </property>
        </item>
       </widget>
