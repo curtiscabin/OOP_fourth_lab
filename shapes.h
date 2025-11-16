@@ -61,35 +61,60 @@ public:
         show();
     }
 
+    bool isXBelongToSection(const int& x){
+        QRect parentRect = this->parentWidget()->rect();
+        return parentRect.x() <= x + sizeX /2
+               && x + sizeX/2 <= parentRect.x() + parentRect.width()
+               &&parentRect.x() <= x - sizeX /2
+               && x - sizeX/2 <= parentRect.x() + parentRect.width();
+    }
+
+    bool isYBelongToSection(const int& y){
+        QRect parentRect = this->parentWidget()->rect();
+        return parentRect.y() <= y + sizeY/2
+               && y + sizeY/2 <= parentRect.y() + parentRect.height()
+               &&parentRect.y() <= y - sizeY/2
+               && y - sizeY/2 <= parentRect.y() + parentRect.height();
+    }
+
 
     void MoveShape(const QPoint &p) {
         QRect parentRect = this->parentWidget()->rect();
-        if(parentRect.x() <= p.x() + sizeX /2 && p.x() + sizeX/2 <= parentRect.x() + parentRect.width()
-            &&parentRect.x() <= p.x() - sizeX /2 && p.x() - sizeX/2 <= parentRect.x() + parentRect.width()){
+        if(isXBelongToSection(p.x())){
             move(p.x() - sizeX/2, this->y());
         }
-        if(parentRect.y() <= p.y() + sizeY/2 && p.y() + sizeY/2 <= parentRect.y() + parentRect.height()
-            &&parentRect.y() <= p.y() - sizeY/2 && p.y() - sizeY/2 <= parentRect.y() + parentRect.height()){
+        if(isYBelongToSection(p.y())){
             move(this->x(), p.y() - sizeY/2);
         }
-        // update();
     }
 
     virtual void EditColor() = 0;
 
     void CreatSize(const QPoint& b, const QPoint& e){
-        sizeX = abs(e.x() - b.x());
-        sizeY = abs(e.y()- b.y());
+        QRect parentRect = this->parentWidget()->rect();
+
+        int ex = e.x();
+        int ey = e.y();
+
+        if (ex < parentRect.left()) ex = parentRect.left();
+        else if (ex > parentRect.right()) ex = parentRect.right();
+
+        if (ey < parentRect.top()) ey = parentRect.top();
+        else if (ey > parentRect.bottom()) ey = parentRect.bottom();
+
+        sizeX = abs(ex - b.x());
+        sizeY = abs(ey - b.y());
+
         setFixedSize(sizeX, sizeY);
 
-        if (b.x() < e.x() && b.y() > e.y() ){
-            move(b.x(), e.y());
+        if (b.x() < ex && b.y() > ey){
+            move(b.x(), ey);
         }
-        else if (b.x() > e.x() &&b.y() < e.y()){
-            move(e.x(), b.y());
+        else if (b.x() > ex && b.y() < ey){
+            move(ex, b.y());
         }
-        else if (b.x() > e.x() &&b.y() > e.y()){
-            move(e.x(), e.y());
+        else if (b.x() > ex && b.y() > ey){
+            move(ex, ey);
         }
         else move(b.x(), b.y());
 
@@ -99,8 +124,10 @@ public:
     }
 
     void EditSize(const QPoint& b, const QPoint& e){
-        sizeX = (e.x() - b.x()) < 10 ? 10 : e.x() - b.x();
-        sizeY = (e.y()- b.y()) < 10 ? 10 : e.y() - b.y();
+        QRect parentRect = this->parentWidget()->rect();
+
+        if(e.x() <= parentRect.right()) sizeX = (e.x() - b.x()) < 10 ? 10 : e.x() - b.x();
+        if(e.y() <= parentRect.bottom()) sizeY = (e.y()- b.y()) < 10 ? 10 : e.y() - b.y();
 
         setFixedSize(sizeX, sizeY);
 
@@ -131,7 +158,7 @@ private slots:
     void mouseMoveEvent(QMouseEvent *event) override{
         if(isResize){
             QPoint b = this->pos();
-            QPoint e = parentWidget()->mapFromGlobal(event->globalPos());
+            QPoint e = parentWidget()->mapFromGlobal(event->globalPosition().toPoint());
             EditSize(b,e);
             qDebug()<<"resize object";
         }
