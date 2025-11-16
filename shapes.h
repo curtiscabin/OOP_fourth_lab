@@ -81,7 +81,6 @@ public:
                && y - sizeY/2 <= parentRect.y() + parentRect.height();
     }
 
-
     void MoveShape(const QPoint &p) {
         QRect parentRect = this->parentWidget()->rect();
         if(isXBelongToSection(p.x())){
@@ -92,7 +91,10 @@ public:
         }
     }
 
-    virtual void EditColor() = 0;
+    void EditColor(const QString &c) {
+        color = c;
+        update();
+    }
 
     void CreatSize(const QPoint& b, const QPoint& e){
         QRect parentRect = this->parentWidget()->rect();
@@ -180,26 +182,25 @@ public:
         qDebug()<<"Created Circle";
     }
 
-    ~Circle(){
-        update();
-    }
-
     void paintEvent(QPaintEvent *) override {
         QPainter painter(this);
-
-        if (isSelect_()) painter.setPen(QPen(Qt::cyan, 3));
-        else painter.setPen(QPen(color));
-
+        QPen CirclePen;
         painter.setRenderHint(QPainter::Antialiasing);
+
+        if (isSelect_()){
+            QPen SelectPen;
+            SelectPen.setDashPattern({4,4});
+            SelectPen.setColor("cyan");
+            SelectPen.setWidth(3);
+            painter.setPen(SelectPen);
+            painter.drawRect(0,0,sizeX,sizeY);
+        }
+        CirclePen.setColor(color);
+        painter.setBrush(color);
+
+        painter.setPen(CirclePen);
         painter.drawEllipse(0,0,sizeX,sizeY);
     }
-
-
-
-    void EditColor(){
-
-    }
-
 
 };
 

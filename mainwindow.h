@@ -26,9 +26,11 @@ private:
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *) override;
     void keyPressEvent(QKeyEvent *event) override;
+    void EditColorByRadioBtton();
     MyStorage *store;
     QPoint b;
     QPoint e;
+    QString color;
     Shape *s = nullptr;
     bool isSelecting = false;
 };
