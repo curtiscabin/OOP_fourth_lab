@@ -16,11 +16,9 @@ class Shape : public QWidget {
 protected:
     int sizeX;
     int sizeY;
-    // QPoint* borders = nullptr;
     bool isSelect = false;
     QString color = "white";
     QPushButton *edit = nullptr;
-    bool isResize = false;
 
 signals:
     void editPressed(Shape *self);
@@ -67,32 +65,6 @@ public:
     void PaintShape(){
         show();
     }
-
-    bool isXBelongToSection(const int& x){
-        QRect parentRect = this->parentWidget()->rect();
-        return parentRect.x() <= x + sizeX /2
-               && x + sizeX/2 <= parentRect.x() + parentRect.width()
-               &&parentRect.x() <= x - sizeX /2
-               && x - sizeX/2 <= parentRect.x() + parentRect.width();
-    }
-
-    bool isYBelongToSection(const int& y){
-        QRect parentRect = this->parentWidget()->rect();
-        return parentRect.y() <= y + sizeY/2
-               && y + sizeY/2 <= parentRect.y() + parentRect.height()
-               &&parentRect.y() <= y - sizeY/2
-               && y - sizeY/2 <= parentRect.y() + parentRect.height();
-    }
-
-    // void MoveShape(const QPoint &p) {
-    //     QRect parentRect = this->parentWidget()->rect();
-    //     if(isXBelongToSection(p.x())){
-    //         move(p.x() - sizeX/2, this->y());
-    //     }
-    //     if(isYBelongToSection(p.y())){
-    //         move(this->x(), p.y() - sizeY/2);
-    //     }
-    // }
 
     bool MoveShape(const QPoint&delta){
         int nx = x() + delta.x();
@@ -143,20 +115,6 @@ public:
         }
     }
 
-    // void EditSize(const QPoint& b, const QPoint& e){
-    //     QRect parentRect = this->parentWidget()->rect();
-
-    //     if(e.x() <= parentRect.right()) sizeX = (e.x() - b.x()) < 10 ? 10 : e.x() - b.x();
-    //     if(e.y() <= parentRect.bottom()) sizeY = (e.y()- b.y()) < 10 ? 10 : e.y() - b.y();
-
-    //     setFixedSize(sizeX, sizeY);
-
-    //     if(edit){
-    //         edit->move(sizeX - 20, sizeY - 20);
-    //     }
-
-    // }
-
     void ResizeThat(const QPoint &delta) {
         int nw = sizeX + delta.x();
         int nh = sizeY + delta.y();
@@ -179,38 +137,10 @@ public:
     }
 
 protected slots:
-    // void mouseReleaseEvent(QMouseEvent *event) override {
-    //     if (isResize) {
-    //         isResize = false;
-    //         releaseMouse();
-    //         qDebug() << "Resize finished";
-    //     }
-    // }
-
     void onEditButtonPressed() {
         qDebug()<<"Button is pressed";
         emit editPressed(this);
-        // parentWidget()->MoveAll();
-        // grabMouse();
-        // isResize = true;
     }
-
-    // void mouseMoveEvent(QMouseEvent *event) override{
-    //     if(isResize){
-    //         QPoint b = this->pos();
-    //         QPoint e = parentWidget()->mapFromGlobal(event->globalPosition().toPoint());
-    //         EditSize(b,e);
-    //         qDebug()<<"resize object";
-    //     }
-    //     else
-    //     {
-    //         event->ignore();
-    //     }
-    // }
-
-
-
-
 };
 
 
@@ -271,7 +201,6 @@ public:
     }
 };
 
-
 class Triangle : public Shape {
 public:
     Triangle(const QPoint& b, const QPoint& e, QWidget* parent)
@@ -304,7 +233,6 @@ public:
         }
     }
 };
-
 
 class Section : public Shape {
 public:

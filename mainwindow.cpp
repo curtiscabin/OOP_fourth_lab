@@ -62,13 +62,12 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *){
 void MainWindow::mouseMoveEvent(QMouseEvent *event){
     e = event->pos();
     if (groupResizing) {
-        QPoint delta = e - lastResizePos;
+        delta = e - lastResizePos;
         lastResizePos = e;
 
         for (store->first(); !store->eol(); store->next()) {
-            Shape *sh = store->getObject();
-            if (sh && sh->isSelect_()) {
-                sh->ResizeThat(delta);
+            if(store->getObject()->isSelect_()){
+                store->getObject()->ResizeThat(delta);
             }
         }
         return;
@@ -164,14 +163,6 @@ Shape* MainWindow::GiveMe(){
     return ns;
 
 }
-
-// void MainWindow::MoveAll(){
-//     if(isSelecting){
-//         for(store->first();!store->eol();store->next()){
-//             if(store->getObject()->isSelect_())store->getObject()->grabMouse();
-//         }
-//     }
-// }
 
 void MainWindow::onShapeEditPressed(Shape *sh)
 {

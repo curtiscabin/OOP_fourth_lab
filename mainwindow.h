@@ -29,7 +29,6 @@ private:
     void EditColorByRadioBtton();
     void onShapeEditPressed(Shape *sh);
     Shape* GiveMe();
-    // void MoveAll();
     MyStorage *store;
     QPoint b;
     QPoint e;
