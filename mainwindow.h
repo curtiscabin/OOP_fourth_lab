@@ -27,12 +27,18 @@ private:
     void mouseReleaseEvent(QMouseEvent *) override;
     void keyPressEvent(QKeyEvent *event) override;
     void EditColorByRadioBtton();
+    void onShapeEditPressed(Shape *sh);
     Shape* GiveMe();
+    // void MoveAll();
     MyStorage *store;
     QPoint b;
     QPoint e;
+    QPoint delta;
+    QPoint postpoint;
     QString color;
     Shape *s = nullptr;
     bool isSelecting = false;
+    bool groupResizing = false;
+    QPoint lastResizePos;
 };
 #endif // MAINWINDOW_H

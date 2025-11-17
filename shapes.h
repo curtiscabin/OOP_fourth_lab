@@ -16,11 +16,14 @@ class Shape : public QWidget {
 protected:
     int sizeX;
     int sizeY;
-    QPoint* borders = nullptr;
+    // QPoint* borders = nullptr;
     bool isSelect = false;
     QString color = "white";
     QPushButton *edit = nullptr;
     bool isResize = false;
+
+signals:
+    void editPressed(Shape *self);
 
 
 public:
@@ -81,14 +84,25 @@ public:
                && y - sizeY/2 <= parentRect.y() + parentRect.height();
     }
 
-    void MoveShape(const QPoint &p) {
-        QRect parentRect = this->parentWidget()->rect();
-        if(isXBelongToSection(p.x())){
-            move(p.x() - sizeX/2, this->y());
-        }
-        if(isYBelongToSection(p.y())){
-            move(this->x(), p.y() - sizeY/2);
-        }
+    // void MoveShape(const QPoint &p) {
+    //     QRect parentRect = this->parentWidget()->rect();
+    //     if(isXBelongToSection(p.x())){
+    //         move(p.x() - sizeX/2, this->y());
+    //     }
+    //     if(isYBelongToSection(p.y())){
+    //         move(this->x(), p.y() - sizeY/2);
+    //     }
+    // }
+
+    bool MoveShape(const QPoint&delta){
+        int nx = x() + delta.x();
+        int ny = y() + delta.y();
+
+        QRect rectMove(nx,ny, sizeX,sizeY);
+        if(!parentWidget()->rect().contains(rectMove))return false;
+
+        move(nx,ny);
+        return true;
     }
 
     void EditColor(const QString &c) {
@@ -129,49 +143,77 @@ public:
         }
     }
 
-    void EditSize(const QPoint& b, const QPoint& e){
-        QRect parentRect = this->parentWidget()->rect();
+    // void EditSize(const QPoint& b, const QPoint& e){
+    //     QRect parentRect = this->parentWidget()->rect();
 
-        if(e.x() <= parentRect.right()) sizeX = (e.x() - b.x()) < 10 ? 10 : e.x() - b.x();
-        if(e.y() <= parentRect.bottom()) sizeY = (e.y()- b.y()) < 10 ? 10 : e.y() - b.y();
+    //     if(e.x() <= parentRect.right()) sizeX = (e.x() - b.x()) < 10 ? 10 : e.x() - b.x();
+    //     if(e.y() <= parentRect.bottom()) sizeY = (e.y()- b.y()) < 10 ? 10 : e.y() - b.y();
 
+    //     setFixedSize(sizeX, sizeY);
+
+    //     if(edit){
+    //         edit->move(sizeX - 20, sizeY - 20);
+    //     }
+
+    // }
+
+    void ResizeThat(const QPoint &delta) {
+        int nw = sizeX + delta.x();
+        int nh = sizeY + delta.y();
+
+        if (nw < 10) nw = 10;
+        if (nh < 10) nh = 10;
+
+        QRect parentRect = parentWidget()->rect();
+        QRect newRect(x(), y(), nw, nh);
+        if (!parentRect.contains(newRect))
+            return;
+
+        sizeX = nw;
+        sizeY = nh;
         setFixedSize(sizeX, sizeY);
 
-        if(edit){
+        if (edit) {
             edit->move(sizeX - 20, sizeY - 20);
         }
-
     }
 
 protected slots:
-    void mouseReleaseEvent(QMouseEvent *event) override {
-        if (isResize) {
-            isResize = false;
-            releaseMouse();
-            qDebug() << "Resize finished";
-        }
-    }
+    // void mouseReleaseEvent(QMouseEvent *event) override {
+    //     if (isResize) {
+    //         isResize = false;
+    //         releaseMouse();
+    //         qDebug() << "Resize finished";
+    //     }
+    // }
 
     void onEditButtonPressed() {
         qDebug()<<"Button is pressed";
-        grabMouse();
-        isResize = true;
+        emit editPressed(this);
+        // parentWidget()->MoveAll();
+        // grabMouse();
+        // isResize = true;
     }
 
-    void mouseMoveEvent(QMouseEvent *event) override{
-        if(isResize){
-            QPoint b = this->pos();
-            QPoint e = parentWidget()->mapFromGlobal(event->globalPosition().toPoint());
-            EditSize(b,e);
-            qDebug()<<"resize object";
-        }
-        else
-        {
-            event->ignore();
-        }
-    }
+    // void mouseMoveEvent(QMouseEvent *event) override{
+    //     if(isResize){
+    //         QPoint b = this->pos();
+    //         QPoint e = parentWidget()->mapFromGlobal(event->globalPosition().toPoint());
+    //         EditSize(b,e);
+    //         qDebug()<<"resize object";
+    //     }
+    //     else
+    //     {
+    //         event->ignore();
+    //     }
+    // }
+
+
+
 
 };
+
+
 
 class Circle : public Shape {
 public:

@@ -47,14 +47,32 @@ void MainWindow::mousePressEvent(QMouseEvent *event){
 
 
     b = event->pos();
+    postpoint = b;
 }
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *){
     s = nullptr;
+    if (groupResizing) {
+        groupResizing = false;
+        releaseMouse();
+    }
 }
+
 
 void MainWindow::mouseMoveEvent(QMouseEvent *event){
     e = event->pos();
+    if (groupResizing) {
+        QPoint delta = e - lastResizePos;
+        lastResizePos = e;
+
+        for (store->first(); !store->eol(); store->next()) {
+            Shape *sh = store->getObject();
+            if (sh && sh->isSelect_()) {
+                sh->ResizeThat(delta);
+            }
+        }
+        return;
+    }
     if (!isSelecting ){
         if(!s){
             s = GiveMe();
@@ -64,13 +82,18 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event){
         s->CreatSize(b,e);
         s->PaintShape();
     }
+
     else{
+        delta = e - postpoint;
+        postpoint = e;
         for(store->first();!store->eol();store->next()){
             if(store->getObject()->isSelect_()) {
-            store->getObject()->MoveShape(e);
+                if(!store->getObject()->MoveShape(delta)){
+                    break;
+                }
+            }
         }
     }
-}
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event){
@@ -119,16 +142,42 @@ if (ui->radioBlue->isChecked()){
 
 Shape* MainWindow::GiveMe(){
     int key = ui->comboBox->currentIndex();
+    Shape *ns;
     switch (key)
     {
     case 0 :
-        return new Circle(b,e,this);
+        ns =  new Circle(b,e,this);
+        break;
     case 1 :
-        return new Rect(b,e,this);
+        ns = new Rect(b,e,this);
+        break;
     case 2 :
-        return new Triangle(b,e,this);
+        ns = new Triangle(b,e,this);
+        break;
     case 3 :
-        return new Section(b,e,this);
+        ns = new Section(b,e,this);
+        break;
     }
 
+    connect(ns, &Shape::editPressed,this, &MainWindow::onShapeEditPressed);
+
+    return ns;
+
+}
+
+// void MainWindow::MoveAll(){
+//     if(isSelecting){
+//         for(store->first();!store->eol();store->next()){
+//             if(store->getObject()->isSelect_())store->getObject()->grabMouse();
+//         }
+//     }
+// }
+
+void MainWindow::onShapeEditPressed(Shape *sh)
+{
+    if(sh->isSelect_()){
+        groupResizing = true;
+        lastResizePos = mapFromGlobal(QCursor::pos());
+        grabMouse();
+    }
 }
